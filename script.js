@@ -1,3 +1,9 @@
+// ===== CONFIGURAÇÃO DE AMBIENTE =====
+// Detecta automaticamente se está rodando no Render ou local
+const API_URL = window.location.hostname.includes("localhost")
+  ? "http://localhost:3000"
+  : "https://radar-editais.onrender.com";
+
 // ===== VARIÁVEIS =====
 const listaIncluir = document.getElementById("listaIncluir");
 const listaExcluir = document.getElementById("listaExcluir");
@@ -17,7 +23,7 @@ let status = "Receber/Recebendo Proposta"; // padrão
 // ===== CARREGAR CONFIGURAÇÃO EXISTENTE =====
 async function carregarConfiguracao() {
   try {
-    const res = await fetch("http://localhost:3000/configuracao");
+    const res = await fetch(`${API_URL}/configuracao`);
     const data = await res.json();
 
     q_incluir = data.q_incluir || [];
@@ -30,6 +36,7 @@ async function carregarConfiguracao() {
     renderListas();
   } catch (error) {
     console.error("Erro ao carregar configuração:", error);
+    mostrarMensagem("❌ Erro ao carregar configuração.");
   }
 }
 
@@ -109,20 +116,22 @@ function atualizarStatusIndicador() {
 
 // ===== SALVAR CONFIGURAÇÃO =====
 document.getElementById("btnSalvar").addEventListener("click", async () => {
-  // Se não houver estados, assume "Todos"
   const estadosFinal = uf.length ? uf : ["Todos"];
   const body = { q_incluir, q_excluir, uf: estadosFinal, status };
 
   try {
-    const res = await fetch("http://localhost:3000/configurar", {
+    const res = await fetch(`${API_URL}/configurar`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
+    if (!res.ok) throw new Error("Falha na requisição");
     const data = await res.json();
+
     mostrarMensagem("✅ " + data.message);
   } catch (error) {
+    console.error("Erro ao salvar configurações:", error);
     mostrarMensagem("❌ Erro ao salvar configurações.");
   }
 });
@@ -132,12 +141,15 @@ document.getElementById("btnTestar").addEventListener("click", async () => {
   mostrarMensagem("⏳ Enviando e-mail de teste...");
 
   try {
-    const res = await fetch("http://localhost:3000/enviar-agora");
+    const res = await fetch(`${API_URL}/enviar-agora`);
     const data = await res.json();
 
-    if (data.status === "ok") mostrarMensagem("📩 E-mail de teste enviado com sucesso!");
-    else mostrarMensagem("❌ Falha ao enviar e-mail de teste.");
+    if (data.status === "ok")
+      mostrarMensagem("📩 E-mail de teste enviado com sucesso!");
+    else
+      mostrarMensagem("❌ Falha ao enviar e-mail de teste.");
   } catch (error) {
+    console.error("Erro ao enviar e-mail de teste:", error);
     mostrarMensagem("❌ Erro ao conectar com o servidor.");
   }
 });

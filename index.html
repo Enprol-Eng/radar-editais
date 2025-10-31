@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Radar do Edital</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="Radar do Edital">
+      <div>
+        <h1>Radar do Edital</h1>
+        <p>Acesse seu radar personalizado para monitoramento de editais</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="config-section">
+      <h2>⚙️ Configurar Radar do Edital</h2>
+      <p>Defina suas palavras-chave de busca e exclusão, além dos estados desejados.</p>
+
+      <div class="config-grid">
+        <!-- Palavras a incluir -->
+        <div class="config-box">
+          <label>Palavras-chave para incluir</label>
+          <div class="add-row">
+            <input type="text" id="inputIncluir" placeholder="Digite uma palavra a incluir">
+            <button id="addIncluir">+ Adicionar</button>
+          </div>
+          <ul id="listaIncluir"></ul>
+        </div>
+
+        <!-- Palavras a excluir -->
+        <div class="config-box">
+          <label>Palavras-chave para excluir</label>
+          <div class="add-row">
+            <input type="text" id="inputExcluir" placeholder="Digite uma palavra a excluir">
+            <button id="addExcluir">+ Adicionar</button>
+          </div>
+          <ul id="listaExcluir"></ul>
+        </div>
+
+        <!-- Estados -->
+        <div class="config-box">
+          <label>Estados</label>
+          <div class="add-row">
+            <select id="inputEstado">
+              <option value="Todos">Todos</option>
+              <option value="AC">AC</option><option value="AL">AL</option><option value="AM">AM</option>
+              <option value="AP">AP</option><option value="BA">BA</option><option value="CE">CE</option>
+              <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+              <option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option>
+              <option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option>
+              <option value="PE">PE</option><option value="PI">PI</option><option value="PR">PR</option>
+              <option value="RJ">RJ</option><option value="RN">RN</option><option value="RO">RO</option>
+              <option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option>
+              <option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option>
+            </select>
+            <button id="addEstado">+ Adicionar</button>
+          </div>
+            <ul id="listaEstados"></ul>
+          </div>
+        </div>
+
+            <!-- Status -->
+      <div class="config-box">
+        <label>Status:</label>
+        <select id="inputStatus">
+          <option value="Receber/Recebendo Proposta" selected>Receber/Recebendo Proposta</option>
+          <option value="Em Julgamento/Propostas Encerradas">Em Julgamento/Propostas Encerradas</option>
+          <option value="Encerradas">Encerradas</option>
+          <option value="Todos">Todos</option>
+        </select>
+        <p id="statusAtual" class="status-indicador">🟢 Receber/Recebendo Proposta</p>
+      </div>
+
+      <div class="save-area">
+        <button id="btnSalvar">💾 Salvar Configurações</button>
+        <button id="btnTestar">🧪 Enviar e-mail de teste</button>
+        <p id="msgRetorno"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

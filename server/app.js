@@ -8,19 +8,42 @@ import { fileURLToPath } from "url";
 import { buscarEditaisPNCP } from "./pncp.js";
 import { enviarEmail } from "./email.js";
 
+// ===== Configuração base =====
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Caminho onde as configurações de filtro serão salvas
+// Caminho local onde as configurações serão salvas
+// (dentro da própria pasta /server, persistente enquanto o app rodar)
 const configPath = path.join(__dirname, "config.json");
 
-// Rota para salvar filtros vindos do front-end
+// Garante que o arquivo de configuração exista
+if (!fs.existsSync(configPath)) {
+  fs.writeFileSync(
+    configPath,
+    JSON.stringify(
+      {
+        q_incluir: [],
+        q_excluir: [],
+        uf: ["Todos"],
+        status: "Receber/Recebendo Proposta"
+      },
+      null,
+      2
+    )
+  );
+  console.log("🆕 Arquivo config.json criado com valores padrão.");
+}
 
-
+// ===== Rota para salvar filtros vindos do front-end =====
 app.post("/configurar", (req, res) => {
-  const { q_incluir = [], q_excluir = [], uf = [], status = "Receber/Recebendo Proposta" } = req.body;
+  const {
+    q_incluir = [],
+    q_excluir = [],
+    uf = [],
+    status = "Receber/Recebendo Proposta"
+  } = req.body;
 
   fs.writeFileSync(
     configPath,
@@ -37,16 +60,26 @@ app.post("/configurar", (req, res) => {
   res.json({ status: "ok", message: "Configurações salvas com sucesso" });
 });
 
-
-
-// Rota para consultar filtros atuais
+// ===== Rota para consultar filtros atuais =====
 app.get("/configuracao", (req, res) => {
-  if (!fs.existsSync(configPath)) return res.json({ q: [], uf: [] });
-  const data = JSON.parse(fs.readFileSync(configPath));
-  res.json(data);
+  try {
+    if (!fs.existsSync(configPath))
+      return res.json({
+        q_incluir: [],
+        q_excluir: [],
+        uf: ["Todos"],
+        status: "Receber/Recebendo Proposta"
+      });
+
+    const data = JSON.parse(fs.readFileSync(configPath));
+    res.json(data);
+  } catch (err) {
+    console.error("❌ Erro ao ler config.json:", err.message);
+    res.status(500).json({ error: "Erro ao ler configurações." });
+  }
 });
 
-// ====== Teste manual de envio ======
+// ===== Envio manual de e-mail =====
 app.get("/enviar-agora", async (req, res) => {
   try {
     console.log("📤 Iniciando envio manual de e-mail...");
@@ -68,15 +101,20 @@ app.get("/enviar-agora", async (req, res) => {
   }
 });
 
-// CRON - Executa de segunda a sexta às 10h
-cron.schedule("0 10 * * 1-5", async () => {
-  console.log("⏰ Executando rotina diária de editais...");
-  if (!fs.existsSync(configPath)) return;
-  const filtros = JSON.parse(fs.readFileSync(configPath));
-  const resultados = await buscarEditaisPNCP(filtros);
-  await enviarEmail(resultados, filtros);
-}, { timezone: "America/Sao_Paulo" });
+// ===== CRON: Executa de segunda a sexta às 10h =====
+cron.schedule(
+  "0 10 * * 1-5",
+  async () => {
+    console.log("⏰ Executando rotina diária de editais...");
+    if (!fs.existsSync(configPath)) return;
 
-// Servidor HTTP
+    const filtros = JSON.parse(fs.readFileSync(configPath));
+    const resultados = await buscarEditaisPNCP(filtros);
+    await enviarEmail(resultados, filtros);
+  },
+  { timezone: "America/Sao_Paulo" }
+);
+
+// ===== Inicialização do servidor HTTP =====
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));

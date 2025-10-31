@@ -122,3 +122,13 @@ cron.schedule(
 // ===== Servidor HTTP =====
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
+
+// Servir arquivos estáticos da raiz (frontend)
+const frontPath = path.join(__dirname, "../");
+app.use(express.static(frontPath));
+
+// Redirecionar rota raiz para index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(frontPath, "index.html"));
+});
+

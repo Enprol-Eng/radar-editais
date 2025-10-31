@@ -1,7 +1,10 @@
 // server/email.js
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { Resend } from "resend";
 dotenv.config();
+
+// Inicializa o cliente Resend com a chave de API
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function enviarEmail(editais, filtros) {
   if (!editais.length) return console.log("Nenhum edital encontrado hoje.");

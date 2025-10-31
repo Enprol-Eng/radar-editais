@@ -15,8 +15,8 @@
     "dotenv": "^17.2.3",
     "express": "^4.19.2",
     "node-cron": "^3.0.3",
-    "nodemailer": "^6.9.4",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^6.9.4"
   },
   "engines": {
     "node": ">=18.x"

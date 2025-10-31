@@ -44,10 +44,9 @@ export async function enviarEmail(editais, filtros) {
     }
   });
 
-  await transporter.sendMail({
-    from: `"Radar de Editais" <${process.env.EMAIL_USER}>`,
-    to: "misaelrodriguesoficial@gmail.com",
-    cc: ["engenharia@enprol.com.br"], // opcional
+  await resend.emails.send({
+    from: "Radar Enprol <onboarding@resend.dev>",
+    to: ["misaelrodriguesoficial@gmail.com"],
     subject: "📰 Relatório diário de editais",
     html
   });

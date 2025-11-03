@@ -97,13 +97,19 @@ app.get("/enviar-agora", async (req, res) => {
   try {
     console.log("📤 Enviando e-mail manualmente...");
     const filtros = await lerConfiguracao();
+    console.log("📄 Filtros carregados:", filtros);
     const resultados = await buscarEditaisPNCP(filtros);
+    console.log(`🔎 ${resultados.length} editais encontrados.`);
     await enviarEmail(resultados, filtros);
     console.log("✅ E-mail enviado manualmente com sucesso!");
-    res.json({ status: "ok" });
+    res.json({ status: "ok", message: "E-mail enviado manualmente com sucesso!" });
   } catch (err) {
-    console.error("❌ Erro ao enviar e-mail:", err.message);
-    res.status(500).json({ error: "Falha ao enviar e-mail." });
+    console.error("❌ Erro ao enviar e-mail:", err);
+    res.status(500).json({
+      error: "Falha ao enviar e-mail.",
+      detalhe: err.message || err.toString(),
+      stack: err.stack
+    });
   }
 });
 

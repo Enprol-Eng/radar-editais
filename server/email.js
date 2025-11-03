@@ -37,7 +37,7 @@ export async function enviarEmail(editais, filtros) {
   `;
 
   await resend.emails.send({
-    from: "Radar Enprol <onboarding@resend.dev>",
+    from: `"Radar de Editais" <${process.env.EMAIL_USER}>`,
     to: ["misaelrodriguesoficial@gmail.com"],
     subject: "📰 Relatório diário de editais",
     html
